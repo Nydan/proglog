@@ -1,6 +1,9 @@
 package server
 
-import "sync"
+import (
+	"sync"
+	"fmt"
+)
 
 type Log struct {
 	mu sync.Mutex
@@ -29,7 +32,7 @@ func (l *Log) Append(record Record) (uint64, error) {
 func (l *Log) Read(offset uint64) (Record, error) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	if offset >= uint64(l.records) {
+	if offset >= uint64(len(l.records)) {
 		return Record{}, ErrOffsetNotFound
 	}
 	return l.records[offset], nil
