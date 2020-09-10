@@ -5,8 +5,8 @@ import (
 	"os"
 	"path"
 
+	api "github.com/Nydan/proglog/WriteALogPackage/api/v1"
 	"github.com/golang/protobuf/proto"
-	api "github.com/nydan/proglog/WriteALogPackage/api/v1"
 )
 
 type segment struct {
@@ -104,4 +104,21 @@ func (s *segment) Remove() error {
 		return err
 	}
 	return nil
+}
+
+func (s *segment) Close() error {
+	if err := s.index.Close(); err != nil {
+		return err
+	}
+	if err := s.store.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func nearestMultiple(j, k uint64) uint64 {
+	if j >= 0 {
+		return (j / k) * k
+	}
+	return ((j - k + 1) / k) * k
 }
