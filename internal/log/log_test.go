@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	api "github.com/Nydan/proglog/WriteALogPackage/api/v1"
+	api "github.com/Nydan/proglog/api/v1"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 )
@@ -42,13 +42,15 @@ func testAppendRead(t *testing.T, log *Log) {
 
 	read, err := log.Read(off)
 	require.NoError(t, err)
-	require.Equal(t, append, read)
+	require.Equal(t, append.Value, read.Value)
+
 }
 
 func testOutOfRangeErr(t *testing.T, log *Log) {
 	read, err := log.Read(1)
 	require.Nil(t, read)
-	require.Error(t, err)
+	apiErr := err.(api.ErrOffsetOutOfRange)
+	require.Equal(t, uint64(1), apiErr.Offset)
 }
 
 func testInitExisting(t *testing.T, o *Log) {
@@ -96,7 +98,7 @@ func testReader(t *testing.T, log *Log) {
 	read := &api.Record{}
 	err = proto.Unmarshal(b[lenWidth:], read)
 	require.NoError(t, err)
-	require.Equal(t, append, read)
+	require.Equal(t, append.Value, read.Value)
 }
 
 func testTruncate(t *testing.T, log *Log) {
@@ -112,5 +114,5 @@ func testTruncate(t *testing.T, log *Log) {
 	require.NoError(t, err)
 
 	_, err = log.Read(0)
-	require.NoError(t, err)
+	require.Error(t, err)
 }

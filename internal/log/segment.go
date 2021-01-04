@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	api "github.com/Nydan/proglog/WriteALogPackage/api/v1"
+	api "github.com/Nydan/proglog/api/v1"
 	"github.com/golang/protobuf/proto"
 )
 
